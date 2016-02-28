@@ -8,6 +8,8 @@ namespace EightPuzzleGameSolver
 {
     public class NodeTreeOperations
     {
+        public static int[] GOAL_MATRIX = { 1, 2, 3, 8, 0, 4, 7, 6, 5 };
+
         public List<Node> NodeTree { get; set; }
 
         public void CreateNodeTree(int[] given, int maxLevel)
@@ -15,7 +17,7 @@ namespace EightPuzzleGameSolver
             NodeTree = new List<Node>();
             NodeTree.Add(new Node(given, 0, 0));
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < maxLevel; i++)
             {
                 List<Node> allNodesCopy = new List<Node>();
                 allNodesCopy.AddRange(NodeTree);
@@ -27,7 +29,7 @@ namespace EightPuzzleGameSolver
                 foreach (var item in levelNodes)
                 {
                     List<Node> children = CreateChildNodes(item);
-                    NodeTree.AddRange(children);
+                    addRangeToList(children);
                 }
             }
         }
@@ -107,6 +109,43 @@ namespace EightPuzzleGameSolver
 
             var levelNodes = NodeTree.Select(x => x.Level == rootLevel + 1);
             return levelNodes.Count();
+        }
+
+        public bool IsEqualToGoalMatrix(int[] matrix)
+        {
+            return IsEqualToGivenMatrix(GOAL_MATRIX, matrix);
+        }
+
+        public bool IsEqualToGivenMatrix(int[] goal, int[] matrix)
+        {
+            bool result = true;
+
+            for (int i = 0; i < matrix.Length; i++)
+            {
+                if (goal[i] != matrix[i])
+                {
+                    result = false;
+                    break;
+                }
+            }
+
+            return result;
+        }
+
+        public void addNodeToList(Node node)
+        {
+            if (!NodeTree.Exists(n => IsEqualToGivenMatrix(n.Matrix, node.Matrix)))
+            {
+                NodeTree.Add(node);
+            }
+        }
+
+        public void addRangeToList(List<Node> nodeList)
+        {
+            foreach (Node item in nodeList)
+            {
+                addNodeToList(item);
+            }
         }
     }
 }
